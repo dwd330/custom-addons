@@ -4,7 +4,7 @@ class ITManagement(models.Model):
     _name = 'it_management'
     _description = 'Custom IT Management'
 
-    # Initialize the app with categories and locations:
+
     @api.model
     def create_init_category_locations(self):
         # Define locations
