@@ -1,0 +1,43 @@
+<odoo>
+    <record id="res_config_settings_view_form_tiktok_customize" model="ir.ui.view">
+        <field name="name">social.media_tiktok.settings</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="TikTok Integration" string="TikTok" name="tiktok">
+
+                    <!-- TikTok Integration Settings -->
+                    <block title="TikTok Integration Settings">
+                        <setting title="Auth Code">
+                            <field name="tiktok_auth_code" string="Auth Code:"/>
+                        </setting>
+                        <setting title="App ID">
+                            <field name="tiktok_app_id" string="App ID:"/>
+                        </setting>
+                        <setting title="Advertiser ID">
+                            <field name="tiktok_advertiser_id" string="Advertiser ID:"/>
+                        </setting>
+                        <setting title="API Secret">
+                            <field name="tiktok_secret" string="API Secret:"/>
+                        </setting>
+                        <setting title="TikTok Page ID">
+                            <field name="tiktok_page_id" string="Page ID:"/>
+                        </setting>
+                    </block>
+
+                    <!-- Sales Team and Salesperson Settings for TikTok Leads -->
+                    <block title="TikTok Lead Sales Assignment">
+                        <setting title="Sales Team for TikTok Leads">
+                            <field name="tiktok_sales_team_id" string="Sales Team"/>
+                        </setting>
+                        <setting title="Salesperson for TikTok Leads">
+                            <field name="tiktok_salesperson_id" string="Salesperson"/>
+                        </setting>
+                    </block>
+
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

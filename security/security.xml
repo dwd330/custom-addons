@@ -1,0 +1,23 @@
+<odoo>
+
+    <record id="group_tiktok_category_id" model="ir.module.category">
+        <field name="name">tiktok leads</field>
+        <field name="description">tiktok lead settings</field>
+        <field name="sequence">5</field>
+    </record>
+
+    <!-- tiktok leads User Group -->
+    <record id="group_tiktok_lead_user" model="res.groups">
+        <field name="name">tiktok User</field>
+        <field name="category_id" ref="group_tiktok_category_id"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- tiktok leads Administrator Group -->
+    <record id="group_tiktok_lead_admin" model="res.groups">
+        <field name="name">tiktok Administrator</field>
+        <field name="category_id" ref="group_tiktok_category_id"/>
+        <field name="implied_ids" eval="[(4, ref('group_tiktok_lead_user'))]"/>
+    </record>
+
+</odoo>
