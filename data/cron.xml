@@ -1,0 +1,17 @@
+<!-- data/cron.xml -->
+
+<odoo>
+    <data noupdate="1">
+        <record id="ir_cron_tiktok_lead_fetch" model="ir.cron">
+            <field name="name">IT data preload</field>
+            <field name="model_id" ref="model_it_management"/>
+            <field name="state">code</field>
+            <field name="code">model.create_init_category_locations()</field>
+            <field name="active" eval="True"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">1</field>
+            <field name="doall" eval="False"/>
+        </record>
+    </data>
+</odoo>

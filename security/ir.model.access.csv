@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_it_management,access_it_management,model_it_management,group_it_user,0,0,0,0
+access_it_management,access_it_management,model_it_management,group_it_admin,1,1,1,1
