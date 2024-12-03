@@ -1,0 +1,49 @@
+<odoo>
+
+    <!-- Complaint Category -->
+    <record id="group_complaints_category_id" model="ir.module.category">
+        <field name="name">Complaints</field>
+        <field name="description">Complaint settings</field>
+        <field name="sequence">5</field>
+    </record>
+
+    <!-- Complaint User Group -->
+    <record id="group_complaint_user" model="res.groups">
+        <field name="name">Complaint User</field>
+        <field name="category_id" ref="group_complaints_category_id"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Complaint Administrator Group -->
+    <record id="group_complaint_admin" model="res.groups">
+        <field name="name">Complaint Administrator</field>
+        <field name="category_id" ref="group_complaints_category_id"/>
+        <field name="implied_ids" eval="[(4, ref('group_complaint_user'))]"/>
+    </record>
+
+       <!-- record rule allow user to see only his created rules -->
+        <record id="compliant_record_rule" model="ir.rule">
+        <field name="name">complaint_record_rule_by_user</field>
+            <field name="model_id" ref="complaints.model_complaint"/>
+       <field name="domain_force">[('create_uid','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_complaint_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+
+        <!-- Complaint Record Rule for Admin - Allows Access to All Records -->
+    <record id="complaint_record_rule_admin" model="ir.rule">
+        <field name="name">Complaint Record Rule (Admin)</field>
+        <field name="model_id" ref="complaints.model_complaint"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_complaint_admin'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+</odoo>

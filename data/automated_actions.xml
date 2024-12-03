@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Example: Notification to patient when a complaint is received -->
+        <record id="complaint_received_notification" model="base.automation">
+            <field name="name">Complaint Received Notification</field>
+            <field name="model_id" ref="model_complaints"/>
+            <field name="trigger">on_create</field>
+            <field name="state">code</field>
+            <field name="code">
+                if record.contact_email:
+                    template = env.ref('module_name.email_template_complaint_received')
+                    env['mail.template'].browse(template.id).send_mail(record.id, force_send=True)
+            </field>
+        </record>
+
+        <!-- Define other automated actions for different workflows here -->
+    </data>
+</odoo>
