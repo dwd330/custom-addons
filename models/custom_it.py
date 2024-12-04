@@ -16,7 +16,7 @@ class ITManagement(models.Model):
             {'name': 'sydney medical center', 'emirates': 'Dubai', 'type': 'clinic'},
             {'name': 'nmmc medical center', 'emirates': 'Dubai', 'type': 'clinic'},
             {'name': 'arya clinic', 'emirates': 'Dubai', 'type': 'clinic'},
-            {'name': 'american aesthetices ', 'emirates': 'Dubai', 'type': 'clinic'},
+            {'name': 'american esthetic ', 'emirates': 'Dubai', 'type': 'clinic'},
         ]
 
         # Create locations if they do not exist

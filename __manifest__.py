@@ -9,7 +9,11 @@
         'security/security.xml',
         'security/ir.model.access.csv',
         'views/it_menu.xml',
-        'data/cron.xml',
+        'data/data.xml',
+        #'data/cron.xml',
+    ],
+    'demo': [
+        'demo/demo.xml',
     ],
     'installable': True,
     'application': True,

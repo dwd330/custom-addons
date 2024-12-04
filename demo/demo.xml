@@ -1,0 +1,71 @@
+<odoo>
+    <data noupdate="1">
+        <record id="location_hr_m09" model="equipment.location">
+            <field name="name">HR m09</field>
+            <field name="emirates">Dubai</field>
+            <field name="type">office</field>
+        </record>
+        <record id="location_marketing_m01" model="equipment.location">
+            <field name="name">marketing m01</field>
+            <field name="emirates">Dubai</field>
+            <field name="type">office</field>
+        </record>
+        <record id="location_marketing_202" model="equipment.location">
+            <field name="name">marketing 202</field>
+            <field name="emirates">Dubai</field>
+            <field name="type">office</field>
+        </record>
+        <record id="location_vitasign_102" model="equipment.location">
+            <field name="name">vitasign 102</field>
+            <field name="emirates">Dubai</field>
+            <field name="type">office</field>
+        </record>
+          <record id="location_afroda" model="equipment.location">
+            <field name="name">afroda</field>
+            <field name="emirates">Ajman</field>
+            <field name="type">factory</field>
+        </record>
+        <record id="location_sydney_medical_center" model="equipment.location">
+            <field name="name">sydney medical center</field>
+            <field name="emirates">Dubai</field>
+            <field name="type">clinic</field>
+        </record>
+        <record id="location_nmmc_medical_center" model="equipment.location">
+            <field name="name">nmmc medical center</field>
+            <field name="emirates">Dubai</field>
+            <field name="type">clinic</field>
+        </record>
+        <record id="location_arya_clinic" model="equipment.location">
+            <field name="name">arya clinic</field>
+            <field name="emirates">Dubai</field>
+            <field name="type">clinic</field>
+        </record>
+        <record id="location_american_esthetic" model="equipment.location">
+            <field name="name">american esthetic</field>
+            <field name="emirates">Dubai</field>
+            <field name="type">clinic</field>
+        </record>
+
+
+
+        # for category
+        <record id="category_printer" model="maintenance.equipment.category">
+            <field name="name">printer</field>
+        </record>
+        <record id="category_sim" model="maintenance.equipment.category">
+            <field name="name">sim</field>
+        </record>
+        <record id="category_nvr" model="maintenance.equipment.category">
+            <field name="name">nvr</field>
+        </record>
+        <record id="category_mobile" model="maintenance.equipment.category">
+            <field name="name">mobile</field>
+        </record>
+        <record id="category_computer" model="maintenance.equipment.category">
+            <field name="name">computer</field>
+        </record>
+        <record id="category_network" model="maintenance.equipment.category">
+            <field name="name">network</field>
+        </record>
+    </data>
+</odoo>
