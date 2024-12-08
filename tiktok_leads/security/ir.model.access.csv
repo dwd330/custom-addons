@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tiktok_lead_user,tiktok.lead user,model_tiktok_lead,group_tiktok_lead_user,1,0,0,0
+access_tiktok_lead_manager,tiktok.lead manager,model_tiktok_lead,group_tiktok_lead_admin,1,1,1,1
+access_res_config_settings_user,res.config.settings user,model_res_config_settings,base.group_system,1,1,1,1

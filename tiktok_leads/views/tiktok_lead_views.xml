@@ -1,0 +1,80 @@
+<odoo>
+    <data>
+        <!-- Tree View -->
+        <record id="view_tiktok_lead_tree" model="ir.ui.view">
+            <field name="name">tiktok.lead.tree</field>
+            <field name="model">tiktok.lead</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="lead_id"/>
+                    <field name="created_time"/>
+                    <field name="ad_id"/>
+                    <field name="ad_name"/>
+                    <field name="adgroup_id"/>
+                    <field name="adgroup_name"/>
+                    <field name="campaign_id"/>
+                    <field name="campaign_name"/>
+                    <field name="form_id"/>
+                    <field name="form_name"/>
+                    <field name="partner_name"/>
+                    <field name="phone"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_tiktok_lead_form" model="ir.ui.view">
+            <field name="name">tiktok.lead.form</field>
+            <field name="model">tiktok.lead</field>
+            <field name="arch" type="xml">
+                <form>
+
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="lead_id"/>
+                                <field name="created_time"/>
+                            </group>
+                            <group>
+                                <field name="ad_id"/>
+                                <field name="ad_name"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="adgroup_id"/>
+                                <field name="adgroup_name"/>
+                            </group>
+                            <group>
+                                <field name="campaign_id"/>
+                                <field name="campaign_name"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="form_id"/>
+                                <field name="form_name"/>
+                            </group>
+                            <group>
+                                <field name="partner_name"/>
+                                <field name="phone"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action to display leads -->
+        <record id="action_tiktok_leads" model="ir.actions.act_window">
+            <field name="name">TikTok Leads</field>
+            <field name="res_model">tiktok.lead</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_tiktok_lead_tree"/>
+        </record>
+
+        <!-- Menu item for TikTok leads -->
+        <menuitem id="menu_tiktok_leads_root" name="TikTok Leads" sequence="10"/>
+        <menuitem id="menu_tiktok_leads" name="TikTok Leads" parent="menu_tiktok_leads_root" action="action_tiktok_leads" sequence="10"/>
+    </data>
+</odoo>

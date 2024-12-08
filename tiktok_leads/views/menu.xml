@@ -1,0 +1,19 @@
+<odoo>
+    <data>
+        <!-- Action to open TikTok Leads -->
+        <record id="action_all_tiktok" model="ir.actions.act_window">
+            <field name="name">All Leads</field>
+            <field name="res_model">tiktok.lead</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[
+                (5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('tiktok_leads.view_tiktok_lead_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('tiktok_leads.view_tiktok_lead_form')})
+            ]"/>
+        </record>
+
+        <!-- Menu Items -->
+        <menuitem id="menu_tiktok_root" name="TikTok" sequence="10" web_icon="tiktok_leads,static/description/icon.png"/>
+        <menuitem id="menu_tiktok_leads" name="Leads" parent="menu_tiktok_root" sequence="20" action="action_all_tiktok"/>
+    </data>
+</odoo>
