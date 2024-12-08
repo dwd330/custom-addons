@@ -1,0 +1,67 @@
+<odoo>
+
+    <record id="action_all_complaints" model="ir.actions.act_window">
+        <field name="name">All Complaints</field>
+        <field name="res_model">complaint</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+         (0, 0, {'view_mode': 'tree', 'view_id': ref('view_all_complaint_tree')}),
+          (0, 0, {'view_mode': 'form', 'view_id': ref('view_all_complaint_form')})]"/>
+    </record>
+
+       <record id="action_my_complaints" model="ir.actions.act_window">
+        <field name="name">my Complaints</field>
+        <field name="res_model">complaint</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('agent_id', '=', uid)]</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+         (0, 0, {'view_mode': 'tree', 'view_id': ref('view_all_complaint_tree')}),
+          (0, 0, {'view_mode': 'form', 'view_id': ref('view_all_complaint_form')})]"/>
+    </record>
+
+
+    <record id="action_financial_complaints" model="ir.actions.act_window">
+        <field name="name">financial Complaints</field>
+        <field name="res_model">complaint</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('type', '=', 'financial')]</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+        (0, 0, {'view_mode': 'tree', 'view_id': ref('view_all_complaint_tree')}),
+          (0, 0, {'view_mode': 'form', 'view_id': ref('view_all_complaint_form')})]"/>
+    </record>
+
+    <record id="action_administrative_complaints" model="ir.actions.act_window" >
+        <field name="name">administrative Complaints</field>
+        <field name="res_model">complaint</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('type', '=', 'administrative')]</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+         (0, 0, {'view_mode': 'tree', 'view_id': ref('view_all_complaint_tree')}),
+          (0, 0, {'view_mode': 'form', 'view_id': ref('view_all_complaint_form')})]"/>
+    </record>
+
+    <record id="action_medical_complaints" model="ir.actions.act_window">
+        <field name="name">Medical Complaints</field>
+        <field name="res_model">complaint</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('type', '=', 'medical')]</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+        (0, 0, {'view_mode': 'tree', 'view_id': ref('view_all_complaint_tree')}),
+          (0, 0, {'view_mode': 'form', 'view_id': ref('view_all_complaint_form')})]"/>
+    </record>
+
+
+
+
+
+    <menuitem id="menu_complaints" name="Complaints"  web_icon="complaints,static/description/icon.png"/>
+    <menuitem id="menu_all_complaints" name="All Complaints"  sequence="10" parent="menu_complaints" action="action_all_complaints"/>
+     <menuitem id="menu_my_complaints" name="My Complaints"  sequence="20" parent="menu_complaints" action="action_my_complaints"/>
+    <menuitem id="menu_financial_complaints" name="financial Complaints" parent="menu_complaints"
+         sequence="30"      action="action_financial_complaints"/>
+    <menuitem id="menu_administrative_complaints" name="administrative Complaints" parent="menu_complaints"
+       sequence="40"        action="action_administrative_complaints"/>
+    <menuitem id="menu_medical_complaints" name="Medical Complaints" parent="menu_complaints"
+         sequence="50"      action="action_medical_complaints"/>
+
+</odoo>

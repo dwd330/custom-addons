@@ -1,0 +1,20 @@
+<odoo>
+    <record id="res_config_settings_view_form_complaints_customize" model="ir.ui.view">
+        <field name="name">complaints.settings</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Complaints Module Settings" string="Complaints" name="complaints">
+                    <block title="Complaints Settings">
+
+                        <setting title="ID Setting" help="setting for complaints module.">
+                            <field name="mobile_app_ID"/>
+                        </setting>
+
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

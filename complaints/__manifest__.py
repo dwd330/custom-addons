@@ -1,0 +1,21 @@
+{
+    'name': "Complaints",
+    'summary': "Manage customer complaints effectively",
+    'description': "This module allows you to manage customer complaints in odoo.",
+    'author': "Dawoud",
+    'website': "https://www.nooralmamzar.com",
+    'category': 'Customer Relationship Management',
+    'version': '1.1',
+    'license': 'LGPL-3',
+    'depends': ['base', 'mail'],
+    'data': [
+        'security/security.xml',
+        'security/ir.model.access.csv',
+        'data/complaints_sequence.xml',
+        'views/all_complaints_views.xml',
+        'views/res_config_settings_views.xml',
+        'views/complaints_menu.xml',
+    ],
+    'installable': True,
+    'application': True,
+}

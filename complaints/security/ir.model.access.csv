@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_complaint_admin,access_complaint_admin,model_complaint,complaints.group_complaint_admin,1,1,1,1
+access_complaint_user,access_complaint_user,model_complaint,complaints.group_complaint_user,1,1,1,0
+access_fcm_token_user,access_fcm_token_user,model_fcm_token,base.group_user,1,1,1,1

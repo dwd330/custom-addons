@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Example: Email template for complaint received -->
+        <record id="email_template_complaint_received" model="mail.template">
+            <field name="name">Complaint Received</field>
+            <field name="model_id" ref="model_complaint"/>
+            <field name="subject">Your Complaint has been Received</field>
+            <field name="email_from">${object.agent_id.email|safe}</field>
+            <field name="email_to">${object.contact_email|safe}</field>
+            <field name="body_html">
+                <![CDATA[
+                <p>Dear ${object.patient_name},</p>
+                <p>We have received your complaint regarding "${object.description}". Our team will review it and get back to you shortly.</p>
+                <p>Thank you,</p>
+                <p>${object.agent_name}</p>
+                ]]>
+            </field>
+        </record>
+
+        <!-- Define other email templates for different notifications here -->
+    </data>
+</odoo>

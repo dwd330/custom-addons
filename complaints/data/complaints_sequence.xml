@@ -1,0 +1,11 @@
+<odoo>
+    <record id="seq_complaints_reference" model="ir.sequence">
+        <field name="name">Complaints Reference</field>
+        <field name="code">complaints.reference</field>
+        <field name="prefix">CP</field>
+        <field name="suffix"></field>
+        <field name="padding">5</field>
+        <field name="number_next">1</field>
+
+    </record>
+</odoo>
