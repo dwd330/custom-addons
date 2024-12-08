@@ -1,0 +1,32 @@
+name: Push Notification
+
+on:
+  push:
+    branches:
+      - main  # Replace with the branch you want to monitor
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Send Email Notification
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.example.com  # Replace with your SMTP server
+        server_port: 587  # Typically 587 for SMTP
+        username: ${{ secrets.SMTP_USERNAME }}
+        password: ${{ secrets.SMTP_PASSWORD }}
+        subject: "Code Pushed to Repository"
+        body: "New code has been pushed to the main branch."
+        from: "your-email@example.com"
+        to: "recipient@example.com"
+
+    - name: Send Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      with:
+        slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
+        message: "🚀 Code has been pushed to the repository!"
