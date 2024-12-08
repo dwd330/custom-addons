@@ -1,0 +1,22 @@
+<odoo>
+
+    <record id="group_it_category_id" model="ir.module.category">
+        <field name="name">IT management</field>
+        <field name="description"> IT assets management </field>
+        <field name="sequence">5</field>
+    </record>
+
+    <record id="group_it_user" model="res.groups">
+        <field name="name">IT support</field>
+        <field name="category_id" ref="group_it_category_id"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+
+    <record id="group_it_admin" model="res.groups">
+        <field name="name">IT admin</field>
+        <field name="category_id" ref="group_it_category_id"/>
+        <field name="implied_ids" eval="[(4, ref('group_it_user'))]"/>
+    </record>
+
+</odoo>
