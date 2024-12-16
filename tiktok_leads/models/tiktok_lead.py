@@ -1,13 +1,12 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError,ValidationError
-from odoo.addons.phone_validation.tools import phone_validation
 import requests
 import logging
 import time
 import csv
 from io import StringIO
 from datetime import datetime, timedelta
-import phonenumbers
+from ..utils.config import get_config_param, get_uri
 
 _logger = logging.getLogger(__name__)
 
@@ -27,15 +26,6 @@ class TikTokLead(models.Model):
     form_name = fields.Char(string='Form Name', readonly=True)
     partner_name = fields.Char(string='partner name', readonly=True)
     phone = fields.Char(string='Phone number', readonly=True)
-
-
-    def _get_config_param(self, key, error_message):
-        param = self.env['ir.config_parameter'].sudo().get_param(key)
-        if not param:
-            _logger.error("Error finding the config",error_message)
-            return False
-
-        return param
 
     def convert_tiktok_time(self, time_str):
         if not time_str:
@@ -65,12 +55,12 @@ class TikTokLead(models.Model):
         except ValueError as e:
             _logger.error("Parsing error: %s", e)
             raise UserError("Parsing error with TikTok API.")
-    def get_tiktok_access_token(self):
-        app_id = self._get_config_param('tiktok.app_id', "TikTok App ID not configured.")
-        secret = self._get_config_param('tiktok.secret', "TikTok Secret not configured.")
-        auth_code = self._get_config_param('tiktok.auth_code', "TikTok Auth Code not configured.")
 
-        url = 'https://business-api.tiktok.com/open_api/v1.3/oauth2/access_token/'
+    def get_tiktok_access_token(self):
+        app_id = get_config_param(self.env, 'tiktok.app_id', "TikTok App ID not configured.")
+        secret = get_config_param(self.env, 'tiktok.secret', "TikTok Secret not configured.")
+        auth_code = get_config_param(self.env, 'tiktok.auth_code', "TikTok Auth Code not configured.")
+        url = get_uri('access_token', "access token URL not configured.")
         headers = {'Content-Type': 'application/json'}
         payload = {'app_id': app_id, 'secret': secret, 'auth_code': auth_code}
 
@@ -81,15 +71,17 @@ class TikTokLead(models.Model):
             access_token = response_data['data'].get('access_token')
             if access_token:
                 self.env['ir.config_parameter'].sudo().set_param('tiktok.access_token', access_token)
-                print(self._get_config_param('tiktok.access_token', "Access Token not configured."))
                 _logger.info("Access token retrieved and stored successfully.")
                 return access_token
             _logger.error("Access token not found in response.")
             raise UserError("Access token not found in the TikTok API response.")
         raise UserError(f"Failed to retrieve access token: {response_data.get('message', 'Unknown error.')}")
 
-    def get_task_id(self, access_token, advertiser_id,page_id):
-        url = 'https://business-api.tiktok.com/open_api/v1.3/page/lead/task/'
+    def get_task_id(self,page_id):
+        url = get_uri('lead_task', "lead task URL not configured.")
+        access_token = get_config_param(self.env, 'tiktok.access_token', "Access Token not configured.")
+        advertiser_id = get_config_param(self.env, 'tiktok.advertiser_id', "Advertiser ID not configured.")
+
         params = {
             'advertiser_id': advertiser_id,
             'page_id': page_id,
@@ -102,14 +94,16 @@ class TikTokLead(models.Model):
         if task_data.get('code') == 0 and 'data' in task_data:
             task_id = task_data['data'].get('task_id')
             if task_id:
-                time.sleep(10)
                 return task_id
             _logger.error("Task ID not found in response.")
             raise UserError("Task ID not found in the TikTok API response.")
         raise UserError(f"Failed to start lead task: {task_data.get('message', 'Unknown error.')}")
 
-    def download_tiktok_leads(self, task_id, access_token, advertiser_id):
-        url = 'https://business-api.tiktok.com/open_api/v1.3/page/lead/task/download/'
+
+    def download_tiktok_leads(self, task_id):
+        url = get_uri('download_leads', "Download leads URL not configured.")
+        advertiser_id = get_config_param(self.env, 'tiktok.advertiser_id', "Advertiser ID not configured.")
+        access_token = get_config_param(self.env, 'tiktok.access_token', "Access Token not configured.")
         headers = {'Access-Token': access_token, 'Content-Type': 'application/json'}
         params = {'advertiser_id': advertiser_id, 'task_id': task_id}
 
@@ -118,48 +112,65 @@ class TikTokLead(models.Model):
             return csv_content.decode('utf-8')
         raise UserError("TikTok API did not return CSV content.")
 
-    def process_tiktok_leads(self, csv_content):
+    def process_tiktok_leads(self, csv_content, batch_size=50):
         csv_file = StringIO(csv_content)
         reader = csv.DictReader(csv_file)
+        batch = []
+
         for row in reader:
-            lead_id = row.get('\ufefflead_id', '').lstrip('\ufeff')
-            created_time = self.convert_tiktok_time(row.get('created_time'))
-            if lead_id and not self.search([('lead_id', '=', lead_id)]):
-                tiktok_lead =self.create({
-                    'lead_id': lead_id,
-                    'created_time': created_time,
-                    'ad_id': row.get('ad_id'),
-                    'ad_name': row.get('ad_name'),
-                    'adgroup_id': row.get('adgroup_id'),
-                    'adgroup_name': row.get('adgroup_name'),
-                    'campaign_id': row.get('campaign_id'),
-                    'campaign_name': row.get('campaign_name'),
-                    'form_id': row.get('form_id'),
-                    'form_name': row.get('form_name'),
-                    'partner_name': row.get('Name') or row.get('الاسم'),
-                    'phone': row.get('Phone number') or row.get('رقم الهاتف'),
-                })
-                self.env.cr.commit()
+            try:
+                lead_id = row.get('\ufefflead_id', '').lstrip('\ufeff')
+                created_time = self.convert_tiktok_time(row.get('created_time'))
+                if lead_id and not self.search([('lead_id', '=', lead_id)]):
+                    tiktok_lead_data = {
+                        'lead_id': lead_id,
+                        'created_time': created_time,
+                        'ad_id': row.get('ad_id'),
+                        'ad_name': row.get('ad_name'),
+                        'adgroup_id': row.get('adgroup_id'),
+                        'adgroup_name': row.get('adgroup_name'),
+                        'campaign_id': row.get('campaign_id'),
+                        'campaign_name': row.get('campaign_name'),
+                        'form_id': row.get('form_id'),
+                        'form_name': row.get('form_name'),
+                        'partner_name': row.get('Name') or row.get('الاسم'),
+                        'phone': row.get('Phone number') or row.get('رقم الهاتف'),
+                    }
+                    batch.append(tiktok_lead_data)
+                else:
+                    _logger.warning(f"Duplicate or invalid lead skipped: {lead_id}")
 
-                if tiktok_lead.phone:
-                    self.convert_to_odoo_lead(tiktok_lead)
 
-    def _format_phone_number(self, phone, country_code=False, country_phone_code=False):
-        if phone:
-            if not country_code and not country_phone_code:
-                country_code = 'AE'
-                country_phone_code = '+971'
-            formatted_phone = phone_validation.phone_format(phone, country_code, country_phone_code)
-            return formatted_phone
-        return phone
+                # Process the batch once it reaches the specified size
+                if len(batch) >= batch_size:
+                    self._process_batch(batch)
+                    self.env.cr.commit()   # save batch
+                    batch = []  # Reset the batch
 
+            except Exception as e:
+                _logger.error(f"Error processing data : {e}")
+
+        # Process any remaining leads in the last batch
+        if batch:
+            try:
+                self._process_batch(batch)
+
+            except Exception as e:
+                _logger.error(f"Error processing final batch: {e}")
+
+
+
+    def _process_batch(self, batch):
+        for lead_data in batch:
+            try:
+                tiktok_lead = self.create(lead_data)
+                self.convert_to_odoo_lead(tiktok_lead)
+            except Exception as e:
+                _logger.error(f"Error creating tiktok lead: {e}")
 
     def convert_to_odoo_lead(self, tiktok_lead):
         if not tiktok_lead.phone:
             raise UserError("No phone number provided for lead conversion.")
-
-        # Validate phone number for odoo
-        tiktok_lead.phone = self._format_phone_number(tiktok_lead.phone)
 
         # Retrieve or create the campaign associated with this lead
         campaign = self.env['utm.campaign'].sudo().search([('name', 'like', tiktok_lead.campaign_name)], limit=1)
@@ -168,28 +179,26 @@ class TikTokLead(models.Model):
             _logger.info(f'Campaign created: {campaign.name}')
 
         # Retrieve or create a source for this lead
-        source = self.env['utm.source'].sudo().search([('name', '=', 'TikTok')], limit=1)
+        source = self.env['utm.source'].sudo().search([('name','like', 'TikTok')], limit=1)
         if not source:
             source = self.env['utm.source'].sudo().create({'name': 'TikTok'})
             _logger.info(f'Source created: {source.name}')
 
-        # Find or create the contact (res.partner) based on phone number
-        partner = self.env['res.partner'].sudo().search([('phone', '=', tiktok_lead.phone)], limit=1)
+        # search or create the contact (res.partner) based on phone number
         lang = self.env['res.lang'].search([('name', 'ilike', 'English')])
-
-        if not partner:
-            new_partner = self.env['res.partner'].sudo().create({
-                'name': tiktok_lead.partner_name,
-                'phone': tiktok_lead.phone,
-                'lang': lang.code,
-                'campaign_id': campaign,
-                'source_id': source
-            })
-            partner = new_partner
+        partner = self.env['res.partner'].search([
+            ('phone', '=', tiktok_lead.phone )
+        ], limit=1) or self.env['res.partner'].create({
+            'name': tiktok_lead.partner_name,
+            'phone': tiktok_lead.phone,
+            'lang': lang.code,
+            'campaign_id': campaign,
+            'source_id': source
+        })
 
         # Retrieve the sales team and user from config
-        sales_team_from_config = self._get_config_param('tiktok.sales_team_id', "sales team not configured.")
-        sales_person_from_config = self._get_config_param('tiktok.salesperson_id', "sales person not configured.")
+        sales_team_from_config = get_config_param(self.env, 'tiktok.sales_team_id', "sales team not configured.")
+        sales_person_from_config = get_config_param(self.env, 'tiktok.salesperson_id', "sales person not configured.")
 
         # Validate sales team
         sales_team = self.env['crm.team'].sudo().search([('id', '=', sales_team_from_config)], limit=1)
@@ -211,6 +220,7 @@ class TikTokLead(models.Model):
             'campaign_id': campaign.id,
             'source_id': source.id,
             'partner_id': partner.id,
+            'partner_name_text': partner.name,
             'lang_id': lang.id,
         }
         # Check if a lead exists
@@ -220,24 +230,30 @@ class TikTokLead(models.Model):
 
         lead_stage_exist = self.env['crm.lead'].sudo().search(
             [('phone', '=', tiktok_lead.phone), ('stage_id.is_won', '!=', True)], limit=1)
-        if lead_exists or lead_stage_exist:
+
+        if lead_exists and lead_stage_exist:
             _logger.info(f"Lead already exists. Skipping creation.")
 
         else:
             # create new lead
             lead = self.env['crm.lead'].sudo().create(lead_data)
-            _logger.info(f'Lead created: {lead.id}')
+            try:
+                # Call the onchange method for phone validation
+                lead._onchange_phone1_validation()
+                _logger.info(f'Lead created: {lead.id}')
+            except Exception as e:
+                # Log any issues during the validation process
+                _logger.error(f"Error during phone validation for lead {lead.id}: {e}")
+
+
 
     #main function for tikok leads
     def get_tiktok_leads(self):
-        access_token = self._get_config_param('tiktok.access_token', "Access Token not configured.")
-        print('access_token:', access_token)
+        access_token = get_config_param(self.env, 'tiktok.access_token', "Access Token not configured.")
         if not access_token:
-            #self.get_tiktok_access_token()
-            access_token ='94ff21224f0f1d51bea75984853482839da43b66' #test
+            self.get_tiktok_access_token()
 
-        advertiser_id = self._get_config_param('tiktok.advertiser_id', "Advertiser ID not configured.")
-        page_ids = self._get_config_param('tiktok.page_id', "Page IDs not configured.").split(',')
+        page_ids = get_config_param(self.env, 'tiktok.page_id', "Page IDs not configured.").split(',')
 
         for page_id in page_ids:
             page_id = page_id.strip()
@@ -246,9 +262,11 @@ class TikTokLead(models.Model):
 
             try:
                 _logger.info(f"Processing leads for Page ID: {page_id}")
-                task_id = self.get_task_id(access_token, advertiser_id, page_id)
-                csv_content = self.download_tiktok_leads(task_id, access_token, advertiser_id)
-                if csv_content:
-                    self.process_tiktok_leads(csv_content)
+                task_id = self.get_task_id(page_id)
+                if task_id:
+                    csv_content = self.download_tiktok_leads(task_id)
+                    if csv_content:
+                        self.process_tiktok_leads(csv_content)
             except UserError as e:
                 _logger.error(f"Error processing Page ID {page_id}: {str(e)}")
+
